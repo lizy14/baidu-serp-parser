@@ -23,17 +23,19 @@ def getBaiduSERP(keyword):
 		conn.close()
 		return ''
 	
-
+def parseHTML(html):
+	return html
+	
 def parseItem(item):
 	
 	site = (re.search('<span class="site" ?>(.*?)</span>', item))
-	site = site.group(1) if site else ''
+	site = (site.group(1)) if site else ''
 	date = (re.search('<span class="date" ?>(.*?)</span>', item))
-	date = date.group(1) if date else ''
+	date = (date.group(1)) if date else ''
 	title = (re.search('<a[^>]*>(.*?)</a>', item))
-	title = title.group(1) if title else ''
+	title = parseHTML(title.group(1)) if title else ''
 	excerpt = (re.search('<div class="abs">(.*?)<span class="site" ?>', item))
-	excerpt = excerpt.group(1) if excerpt else ''
+	excerpt = parseHTML(excerpt.group(1)) if excerpt else ''
 	item_ = {'title': title, 'excerpt': excerpt, 'site': site, 'date': date}
 	
 	return item_
