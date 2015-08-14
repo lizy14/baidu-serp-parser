@@ -21,7 +21,7 @@ def BaiduSERP(keyword):
 		page=page.replace('<?xml version="1.0" encoding="utf-8"?>','')
 		page=page.replace('<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">','')
 		page=page.replace('&#160;','')
-		page=page.replace('&nbsp;',': ')
+		page=page.replace('&nbsp;','')
 		
 		#去除附加格式
 		page=page.replace('<em>','')
@@ -39,8 +39,6 @@ def BaiduSERP(keyword):
 				return ""		
 			if (obj.tagName=='em'):
 				delim=""
-			elif (obj.tagName=='div'):
-				delim="\n"
 			else:
 				delim=' '
 			for child in obj.childNodes:
@@ -49,7 +47,11 @@ def BaiduSERP(keyword):
 
 		for div in divs:
 			if div.getAttribute('class')=='resitem':
-				print(getInnerText(div))
+				try:
+					print(getInnerText(div))
+				except:
+					pass
+				print()
 				
 	else:
 		print('HTTP CODE '+resp.status+': '+resp.reason)
