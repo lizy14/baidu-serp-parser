@@ -1,6 +1,5 @@
 import re
 import http.client
-import html
 import urllib.parse
 import sys
 
@@ -10,15 +9,18 @@ def getBaiduSERP(keyword):
 		conn.request("GET","/s?word="+urllib.parse.quote(keyword))
 	except:
 		print('Connection Failed')
+		conn.close()
 		return ''
 		
 	resp = conn.getresponse()
 	
 	if resp.status==200:
 		page = str(resp.read(), 'UTF-8')
+		conn.close()
 		return page
 	else:
 		print('HTTP CODE '+resp.status+': '+resp.reason)
+		conn.close()
 		return ''
 	
 
