@@ -25,15 +25,15 @@ def getBaiduSERP(keyword):
 		return ''
 	
 def parseHTML(html):
-	#html=html.replace('<em>','')
-	#html=html.replace('</em>','')
 	html=html.replace('&#160;',' ')
 	html=unescape(html)
 	
 	html=re.sub('<style[^>]*>[^>]*</style>','',html)
-	html=re.sub('<br />$','',html)
 	html=re.sub('<br ?/?>','\n',html)
+	html=re.sub('</p>','\n',html)
 	html=re.sub('</?\w+[^>]*>','',html)
+
+	html=html.strip()
 	return html
 	
 def parseItem(item):
@@ -76,18 +76,33 @@ def parseBaiduSERP(page):
 def outputFilter(text):
 	#handle UnicodeEncodeError
 	return  text.encode('GBK', 'ignore').decode('GBK')
+	
+def getKeywordFromArgv():
+	flag=False
+	for arg in sys.argv:
+		if flag:
+			return arg
+		if arg in ['-k', '-keyword']:
+			flag=True
+	return None
+	
 def main():
 	
 	while True:
-		keyword = (input('keyword>'))
+		keywordFromArgv = getKeywordFromArgv()
+		if keywordFromArgv:
+			keyword = keywordFromArgv
+		else:
+			keyword = (input('keyword>'))
 		
 		results = parseBaiduSERP(getBaiduSERP(keyword))
 		for result in results:
 			print(outputFilter(result['title']))
 			print(outputFilter(result['content']))
-			print(outputFilter(result['site']+' '+result['date']))
+			if result['site'] or result['date']:
+				print(outputFilter(result['site']+', '+result['date']))
 			print()
 			
-		if '-1' in sys.argv:
+		if '-1' in sys.argv or keywordFromArgv:
 			break
 main()
