@@ -30,6 +30,7 @@ def parseHTML(html):
 	html=html.replace('&#160;',' ')
 	html=unescape(html)
 	
+	html=re.sub('<style[^>]*>[^>]*</style>','',html)
 	html=re.sub('<br />$','',html)
 	html=re.sub('<br ?/?>','\n',html)
 	html=re.sub('</?\w+[^>]*>','',html)
@@ -37,15 +38,20 @@ def parseHTML(html):
 	
 def parseItem(item):
 	
+	title = (re.search('<a[^>]*>(.*?)</a>', item))
+	title = parseHTML(title.group(1)) if title else ''
+	content = (re.search('<div class="abs">(.*)</div>', item))
+	content = parseHTML(content.group(1)) if content else ''
+	
 	site = (re.search('<span class="site" ?>(.*?)</span>', item))
 	site = (site.group(1)) if site else ''
 	date = (re.search('<span class="date" ?>(.*?)</span>', item))
 	date = (date.group(1)) if date else ''
-	title = (re.search('<a[^>]*>(.*?)</a>', item))
-	title = parseHTML(title.group(1)) if title else ''
 	excerpt = (re.search('<div class="abs">(.*?)<span class="site" ?>', item))
-	excerpt = parseHTML(excerpt.group(1)) if excerpt else ''
-	item_ = {'title': title, 'excerpt': excerpt, 'site': site, 'date': date}
+	
+	content = parseHTML(excerpt.group(1)) if excerpt else content
+	
+	item_ = {'title': title, 'content': content, 'site': site, 'date': date}
 	
 	return item_
 	
@@ -66,7 +72,10 @@ def parseBaiduSERP(page):
 
 		
 		return results
-	
+
+def outputFilter(text):
+	#handle UnicodeEncodeError
+	return  text.encode('GBK', 'ignore').decode('GBK')
 def main():
 	
 	while True:
@@ -74,9 +83,9 @@ def main():
 		
 		results = parseBaiduSERP(getBaiduSERP(keyword))
 		for result in results:
-			print(result['title'])
-			print(result['excerpt'])
-			print(result['site']+' '+result['date'])
+			print(outputFilter(result['title']))
+			print(outputFilter(result['content']))
+			print(outputFilter(result['site']+' '+result['date']))
 			print()
 			
 		if '-1' in sys.argv:
