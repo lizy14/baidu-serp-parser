@@ -2,6 +2,7 @@ import re
 import http.client
 import urllib.parse
 import sys
+from html import unescape
 
 def getBaiduSERP(keyword):
 	conn = http.client.HTTPConnection("m.baidu.com")
@@ -24,6 +25,14 @@ def getBaiduSERP(keyword):
 		return ''
 	
 def parseHTML(html):
+	#html=html.replace('<em>','')
+	#html=html.replace('</em>','')
+	html=html.replace('&#160;',' ')
+	html=unescape(html)
+	
+	html=re.sub('<br />$','',html)
+	html=re.sub('<br ?/?>','\n',html)
+	html=re.sub('</?\w+[^>]*>','',html)
 	return html
 	
 def parseItem(item):
@@ -49,10 +58,12 @@ def parseBaiduSERP(page):
 			match = re.search('<div class="reswrap">(.+)</div><div class="pagenav" >',page)
 			items = match.group(1)
 			match = re.findall('<div class="resitem"[^>]*?>(.+?</div>)</div>',items)
-			for item in match:
-				results.append(parseItem(item))
 		except:
 			print('Parse Error')
+			
+		for item in match:
+			results.append(parseItem(item))
+
 		
 		return results
 	
