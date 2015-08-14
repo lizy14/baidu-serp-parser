@@ -63,7 +63,7 @@ def parseBaiduSERP(page):
 		try:
 			match = re.search('<div class="reswrap">(.+)</div><div class="pagenav" >',page)
 			items = match.group(1)
-			match = re.findall('<div class="resitem"[^>]*?>(.+?</div>)</div>',items)
+			match = re.findall('<div class="resitem"[^>]*?>(.+?</div>[^v]*)</div>',items)
 		except:
 			print('Parse Error')
 			
